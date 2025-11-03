@@ -12,10 +12,10 @@ builder.Services.AddAutoMapper(typeof(ProductProfile));
 // Injeção de dependência do serviço de produtos
 builder.Services.AddScoped<IProductService, ProductService>();
 
-// Configuração do DbContext com SQL Server
+// Configuração do DbContext com MySQL
 var connectionString = builder.Configuration.GetConnectionString("DriverConnection");
 builder.Services.AddDbContext<ShopSimContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 33))));
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -33,4 +33,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Mapear os controllers
+app.MapControllers();
+
 app.Run();

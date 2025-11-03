@@ -1,6 +1,5 @@
-﻿using ShopSim.DTOs;
+﻿﻿using ShopSim.DTOs;
 using ShopSim.Models;
-using AutoMapper;
 using AutoMapper;
 
 namespace ShopSim.Profiles;
