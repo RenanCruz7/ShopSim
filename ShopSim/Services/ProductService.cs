@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ShopSim.Data;
 using ShopSim.DTOs;
+using ShopSim.Models;
 
 namespace ShopSim.Services;
 
@@ -30,16 +31,34 @@ public class ProductService : IProductService
 
     public async Task<ProductReadDto> CreateProduct(ProductCreateDto productCreateDto)
     {
-        throw new NotImplementedException();
+        var product = _mapper.Map<Product>(productCreateDto); 
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+        return _mapper.Map<ProductReadDto>(product);
     }
 
     public async Task<bool> UpdateProduct(int id, ProductUpdateDto productUpdateDto)
     {
-        throw new NotImplementedException();
+        var item = await _context.Products.FindAsync(id);
+        if (item == null)
+        {
+            return false;
+        }
+        _mapper.Map(productUpdateDto, item);
+        _context.Products.Update(item);
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<bool> DeleteProduct(int id)
     {
-        throw new NotImplementedException();
+        var item = await _context.Products.FindAsync(id);
+        if (item == null)
+        {
+            return false;
+        }
+        _context.Products.Remove(item);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }
