@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ShopSim.Data;
 using ShopSim.Profiles;
 using ShopSim.Services;
+using Pomelo.EntityFrameworkCore.MySql;
 
 var builder = WebApplication.CreateBuilder(args);
 

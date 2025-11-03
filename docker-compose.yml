@@ -1,0 +1,62 @@
+﻿version: '3.8'
+
+services:
+  shopsim-api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: shopsim-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DriverConnection=Server=mysql;Port=3306;Database=ShopSim;Uid=appuser;Pwd=AppPassword123!;
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - shopsim-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: shopsim-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: RootPassword123!
+      MYSQL_DATABASE: ShopSim
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: AppPassword123!
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - shopsim-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: shopsim-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: appuser
+      PMA_PASSWORD: AppPassword123!
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - shopsim-network
+
+volumes:
+  mysql_data:
+
+networks:
+  shopsim-network:
+    driver: bridge
