@@ -25,12 +25,11 @@ public class User
     
     [Required]
     [StringLength(50)]
-    public string Role { get; set; } = "Customer"; // Admin, Customer
+    public string Role { get; set; } = "Customer";
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
     public bool IsActive { get; set; } = true;
     
-    // Navigation properties
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 }

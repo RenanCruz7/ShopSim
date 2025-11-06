@@ -35,7 +35,6 @@ public class Product
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
     
-    // Navigation properties
     [ForeignKey("CategoryId")]
     public Category Category { get; set; }
     

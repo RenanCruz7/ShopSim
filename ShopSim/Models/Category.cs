@@ -18,6 +18,5 @@ public class Category
     public DateTime? UpdatedAt { get; set; }
     public bool IsActive { get; set; } = true;
     
-    // Navigation properties
     public ICollection<Product> Products { get; set; } = new List<Product>();
 }

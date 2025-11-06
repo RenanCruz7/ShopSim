@@ -70,8 +70,6 @@ public class AuthController : ControllerBase
     {
         try
         {
-            // This would require JWT middleware to extract user ID from token
-            // For now, we'll return a placeholder
             return Ok(ApiResponse<object>.SuccessResponse(new { message = "JWT authentication required" }));
         }
         catch (Exception ex)

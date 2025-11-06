@@ -59,7 +59,6 @@ public class ShopSimContext(DbContextOptions<ShopSimContext> options) : DbContex
     
     private void SeedData(ModelBuilder modelBuilder)
     {
-        // Seed Categories
         modelBuilder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Electronics", Description = "Electronic devices and accessories" },
             new Category { Id = 2, Name = "Clothing", Description = "Fashion and apparel" },
@@ -67,7 +66,6 @@ public class ShopSimContext(DbContextOptions<ShopSimContext> options) : DbContex
             new Category { Id = 4, Name = "Home & Garden", Description = "Home improvement and garden supplies" }
         );
         
-        // Seed Admin User (password: Admin123!)
         modelBuilder.Entity<User>().HasData(
             new User 
             { 

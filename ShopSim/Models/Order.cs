@@ -17,7 +17,7 @@ public class Order
     
     [Required]
     [StringLength(50)]
-    public string Status { get; set; } = "Pending"; // Pending, Processing, Shipped, Delivered, Cancelled
+    public string Status { get; set; } = "Pending";
     
     [StringLength(500)]
     public string ShippingAddress { get; set; }
@@ -25,7 +25,6 @@ public class Order
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
     
-    // Navigation properties
     [ForeignKey("UserId")]
     public User User { get; set; }
     

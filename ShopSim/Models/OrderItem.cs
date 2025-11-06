@@ -24,7 +24,6 @@ public class OrderItem
     [Column(TypeName = "decimal(10,2)")]
     public decimal TotalPrice => Quantity * UnitPrice;
     
-    // Navigation properties
     [ForeignKey("OrderId")]
     public Order Order { get; set; }
     
