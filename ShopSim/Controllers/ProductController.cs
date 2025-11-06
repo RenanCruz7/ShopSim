@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿﻿using Microsoft.AspNetCore.Mvc;
 using ShopSim.DTOs;
 using ShopSim.Services;
 
@@ -16,10 +16,17 @@ public class ProductController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetAllProducts()
+    public async Task<IActionResult> GetAllProducts([FromQuery] ProductFilter filter)
     {
-        var products = await _productService.GetAllProducts();
-        return new OkObjectResult(products);
+        try
+        {
+            var products = await _productService.GetAllProductsAsync(filter);
+            return Ok(ApiResponse<PagedResult<ProductReadDto>>.SuccessResponse(products));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<object>.ErrorResponse("An error occurred while retrieving products"));
+        }
     }
     
     [HttpGet("{id}")]
@@ -27,55 +34,107 @@ public class ProductController : ControllerBase
     {
         try
         {
-            var product = await _productService.GetProductById(id);
-            return new OkObjectResult(product);
+            var product = await _productService.GetProductByIdAsync(id);
+            return Ok(ApiResponse<ProductReadDto>.SuccessResponse(product));
         }
         catch (KeyNotFoundException)
         {
-            return new NotFoundObjectResult(new { message = "Product not found" });
+            return NotFound(ApiResponse<object>.ErrorResponse("Product not found"));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<object>.ErrorResponse("An error occurred while retrieving the product"));
         }
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto productCreateDto)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            return new BadRequestObjectResult(ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ApiResponse<object>.ErrorResponse("Invalid input",
+                    ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList()));
+            }
+
+            var createdProduct = await _productService.CreateProductAsync(productCreateDto);
+            
+            return CreatedAtAction(nameof(GetProductById), 
+                new { id = createdProduct.Id }, 
+                ApiResponse<ProductReadDto>.SuccessResponse(createdProduct, "Product created successfully"));
         }
-        
-        var createdProduct = await _productService.CreateProduct(productCreateDto);
-        return new CreatedAtActionResult("GetProductById", "Product", new { id = createdProduct.Id }, createdProduct);
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ApiResponse<object>.ErrorResponse(ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<object>.ErrorResponse("An error occurred while creating the product"));
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductUpdateDto productUpdateDto)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            return new BadRequestObjectResult(ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ApiResponse<object>.ErrorResponse("Invalid input",
+                    ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList()));
+            }
+
+            var updated = await _productService.UpdateProductAsync(id, productUpdateDto);
+
+            if (!updated)
+            {
+                return NotFound(ApiResponse<object>.ErrorResponse("Product not found"));
+            }
+
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Product updated successfully"));
         }
-        
-        var updated = await _productService.UpdateProduct(id, productUpdateDto);
-        
-        if (!updated)
+        catch (KeyNotFoundException ex)
         {
-            return new NotFoundObjectResult(new { message = "Product not found" });
+            return NotFound(ApiResponse<object>.ErrorResponse(ex.Message));
         }
-        
-        return new OkObjectResult(new { message = "Product updated successfully" });
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<object>.ErrorResponse("An error occurred while updating the product"));
+        }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {
-        var deleted = await _productService.DeleteProduct(id);
-        
-        if (!deleted)
+        try
         {
-            return new NotFoundObjectResult(new { message = "Product not found" });
+            var deleted = await _productService.DeleteProductAsync(id);
+
+            if (!deleted)
+            {
+                return NotFound(ApiResponse<object>.ErrorResponse("Product not found"));
+            }
+
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Product deleted successfully"));
         }
-        
-        return new OkObjectResult(new { message = "Product deleted successfully" });
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<object>.ErrorResponse("An error occurred while deleting the product"));
+        }
+    }
+
+    [HttpGet("category/{categoryId}")]
+    public async Task<IActionResult> GetProductsByCategory(int categoryId)
+    {
+        try
+        {
+            var products = await _productService.GetProductsByCategoryAsync(categoryId);
+            return Ok(ApiResponse<List<ProductReadDto>>.SuccessResponse(products));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<object>.ErrorResponse("An error occurred while retrieving products by category"));
+        }
     }
 }

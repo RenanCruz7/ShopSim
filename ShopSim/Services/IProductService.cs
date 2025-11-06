@@ -1,12 +1,14 @@
-﻿using ShopSim.DTOs;
+﻿﻿using ShopSim.DTOs;
 
 namespace ShopSim.Services;
 
 public interface IProductService
 {
-    Task <IEnumerable<ProductReadDto>> GetAllProducts();
-    Task <ProductReadDto> GetProductById(int id);
-    Task <ProductReadDto> CreateProduct(ProductCreateDto productCreateDto);
-    Task <bool> UpdateProduct(int id, ProductUpdateDto productUpdateDto);
-    Task <bool> DeleteProduct(int id);
+    Task<PagedResult<ProductReadDto>> GetAllProductsAsync(ProductFilter filter);
+    Task<ProductReadDto> GetProductByIdAsync(int id);
+    Task<ProductReadDto> CreateProductAsync(ProductCreateDto productCreateDto);
+    Task<bool> UpdateProductAsync(int id, ProductUpdateDto productUpdateDto);
+    Task<bool> DeleteProductAsync(int id);
+    Task<List<ProductReadDto>> GetProductsByCategoryAsync(int categoryId);
+    Task<bool> ProductExistsAsync(int id);
 }
