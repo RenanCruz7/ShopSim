@@ -1,62 +1,48 @@
-﻿# .NET
-bin/
-obj/
-*.user
-*.suo
-*.cache
-*.dll
-*.pdb
-*.exe
-
-# Docker
-Dockerfile*
-.dockerignore
-
-# Git
+﻿# Ignore Git repository
 .git/
 .gitignore
-.gitattributes
 
-# IDE
-.vs/
-.vscode/
+# Ignore IDE files
 .idea/
-*.sln.DotSettings
+.vs/
+*.sln.iml
+*.DotSettings.user
 
-# OS
+# Ignore build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+
+# Ignore packages
+packages/
+node_modules/
+
+# Ignore OS files
 .DS_Store
 Thumbs.db
 
-# Logs
+# Ignore logs
 *.log
+logs/
 
-# Temporary files
+# Ignore temporary files
 *.tmp
 *.temp
+*.swp
+*.swo
 
-# NuGet
-*.nupkg
-nuget.exe
+# Ignore documentation that's not needed in container
+README.md
+*.md
 
-# MSTest
-TestResults/
+# Ignore Docker files (we don't need them inside the container)
+Dockerfile*
+docker-compose*
+.dockerignore
 
-# Build results
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-build/
-bld/
-[Bb]in/
-[Oo]bj/
-
-# Rider
-.idea/
-
-# User-specific files
-*.rsuser
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
+# Ignore test files
+test/
+tests/
+*.Test/
+*.Tests/
