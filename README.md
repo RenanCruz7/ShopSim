@@ -1,6 +1,6 @@
-﻿﻿# 🛒 ShopSim - E-commerce API
+﻿# 🛒 ShopSim - E-commerce API
 
-Uma API REST moderna para e-commerce desenvolvida com **ASP.NET Core 8**, featuring autenticação JWT, gerenciamento de produtos, categorias e pedidos.
+Uma API REST moderna para e-commerce desenvolvida com **ASP.NET Core 8**, com autenticação JWT, gerenciamento de produtos, categorias e pedidos.
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg)](https://www.mysql.com/)
@@ -9,30 +9,22 @@ Uma API REST moderna para e-commerce desenvolvida com **ASP.NET Core 8**, featur
 ## ✨ Funcionalidades
 
 ### 🔐 Autenticação e Autorização
-- **JWT Authentication** com tokens seguros
-- **Controle de acesso** baseado em roles (Admin/Customer)
-- **Registro e login** de usuários
-- **Criptografia de senhas** com BCrypt
+- JWT Authentication com tokens seguros
+- Controle de acesso baseado em roles (Admin/Customer)
+- Registro e login de usuários
+- Criptografia de senhas com BCrypt
 
 ### 📦 Gerenciamento de Produtos
-- **CRUD completo** de produtos
-- **Organização por categorias**
-- **Controle de estoque** em tempo real
-- **Filtros avançados** (nome, categoria, preço, estoque)
-- **Paginação e ordenação**
+- CRUD completo de produtos
+- Organização por categorias
+- Controle de estoque
+- Filtros e paginação
 
 ### 🛍️ Sistema de Pedidos
-- **Carrinho de compras**
-- **Processamento de pedidos** completo
-- **Status de pedidos** (Pendente, Processando, Enviado, Entregue, Cancelado)
-- **Histórico de pedidos** por usuário
-
-### 🏗️ Arquitetura
-- **Clean Architecture** com separação de responsabilidades
-- **Global Exception Handling**
-- **Padronização de respostas** da API
-- **AutoMapper** para mapeamento de objetos
-- **Documentação Swagger** completa
+- Carrinho de compras
+- Processamento de pedidos
+- Status de pedidos (Pendente, Processando, Enviado, Entregue, Cancelado)
+- Histórico de pedidos por usuário
 
 ## 🛠️ Tecnologias
 
@@ -49,6 +41,71 @@ Uma API REST moderna para e-commerce desenvolvida com **ASP.NET Core 8**, featur
 
 ### Pré-requisitos
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Docker](https://www.docker.com/) (para executar com MySQL)
+
+### 1. Clone o repositório
+```bash
+git clone [url-do-repositorio]
+cd ShopSim
+```
+
+### 2. Execute com Docker Compose
+```bash
+# Subir o banco MySQL
+docker-compose up -d mysql
+
+# Executar as migrations
+dotnet ef database update --project ShopSim
+
+# Executar a aplicação
+dotnet run --project ShopSim
+```
+
+### 3. Acesse a aplicação
+- **API**: http://localhost:5000
+- **Swagger UI**: http://localhost:5000/swagger
+
+## 📊 Estrutura do Projeto
+
+```
+ShopSim/
+├── Controllers/          # Controladores da API
+├── Data/                # Contexto do Entity Framework
+├── DTOs/               # Data Transfer Objects
+├── Models/             # Modelos de domínio
+├── Services/           # Lógica de negócio
+├── Profiles/           # Perfis do AutoMapper
+├── Middleware/         # Middlewares customizados
+└── Migrations/         # Migrações do banco de dados
+```
+
+## 🔗 API Endpoints
+
+### Autenticação
+- `POST /api/auth/register` - Registrar usuário
+- `POST /api/auth/login` - Login de usuário
+
+### Produtos
+- `GET /api/products` - Listar produtos
+- `GET /api/products/{id}` - Obter produto por ID
+- `POST /api/products` - Criar produto
+- `PUT /api/products/{id}` - Atualizar produto
+- `DELETE /api/products/{id}` - Excluir produto
+
+### Categorias
+- `GET /api/categories` - Listar categorias
+- `POST /api/categories` - Criar categoria
+- `PUT /api/categories/{id}` - Atualizar categoria
+- `DELETE /api/categories/{id}` - Excluir categoria
+
+### Pedidos
+- `GET /api/orders` - Listar pedidos do usuário
+- `POST /api/orders` - Criar pedido
+- `PUT /api/orders/{id}/status` - Atualizar status do pedido
+
+## 👨‍💻 Desenvolvimento
+
+Criado com ❤️ usando ASP.NET Core e as melhores práticas de desenvolvimento.
 - [Docker](https://www.docker.com/get-started)
 
 ### 🐳 Com Docker (Recomendado)
