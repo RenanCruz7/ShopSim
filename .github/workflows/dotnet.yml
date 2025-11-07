@@ -1,4 +1,4 @@
-﻿name: .NET
+﻿name: .NET CI/CD
 
 on:
   push:
@@ -6,10 +6,15 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     services:
       mysql:
         image: mysql:8.0
@@ -19,22 +24,60 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=5
+          --tmpfs /var/lib/mysql:rw,noexec,nosuid,size=1024m
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup .NET
+    - name: 🔄 Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
-        
-    - name: Restore dependencies
-      run: dotnet restore
-      
-    - name: Build
-      run: dotnet build --no-restore
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 📦 Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: 🔄 Restore dependencies
+      run: |
+        dotnet restore --verbosity minimal --no-cache
+
+    - name: 🏗️ Build project
+      run: |
+        dotnet build --no-restore --configuration Release --verbosity minimal
+
+    - name: 🧪 Run tests (if any)
+      run: |
+        if [ -d "tests" ] || find . -name "*Test*.csproj" -o -name "*.Tests.csproj" | grep -q .; then
+          dotnet test --no-build --configuration Release --verbosity minimal --logger trx --collect:"XPlat Code Coverage" --results-directory ./TestResults/
+        else
+          echo "⚠️ No test projects found, skipping tests"
+        fi
+
+    - name: 📊 Upload test results
+      uses: actions/upload-artifact@v4
+      if: always() && hashFiles('TestResults/**/*.trx') != ''
+      with:
+        name: test-results-${{ github.run_number }}
+        path: "TestResults/**/*.trx"
+        retention-days: 7
+
+    - name: 📈 Upload coverage reports
+      uses: actions/upload-artifact@v4
+      if: always() && hashFiles('TestResults/**/coverage.cobertura.xml') != ''
+      with:
+        name: coverage-report-${{ github.run_number }}
+        path: "TestResults/**/coverage.cobertura.xml"
+        retention-days: 7
 

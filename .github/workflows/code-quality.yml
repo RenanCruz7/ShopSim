@@ -1,0 +1,40 @@
+﻿name: Code Quality
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+    - name: 🔄 Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🔧 Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: 📦 Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: 🔍 Code Analysis
+      run: |
+        dotnet restore --verbosity minimal
+        dotnet build --no-restore --verbosity minimal
+
+    - name: 📏 Check code formatting
+      run: |
+        dotnet format --verify-no-changes --verbosity minimal
