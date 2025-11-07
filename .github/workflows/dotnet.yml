@@ -1,4 +1,4 @@
-﻿name: .NET CI/CD
+﻿﻿name: .NET CI/CD
 
 on:
   push:
@@ -51,7 +51,7 @@ jobs:
 
     - name: 🔄 Restore dependencies
       run: |
-        dotnet restore --verbosity minimal --no-cache
+        dotnet restore --verbosity minimal
 
     - name: 🏗️ Build project
       run: |
